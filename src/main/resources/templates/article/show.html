@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-cn"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${article.title}"></title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/bootstrap/4.1.1/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/elementui/2.12.0/elementui.index.min.css">
+    <style type="text/css">
+        .container {
+            margin-top: 15px;
+        }
+        .mdContent img{
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="/highlight/styles/default.min.css">
+    <script src="/highlight/highlight.min.js"></script>
+    <script>
+        // 加载完毕后初始化代码高亮
+        hljs.initHighlightingOnLoad()
+    </script>
+</head>
+<body class="bg-light">
+<div id="app">
+
+    <div class="container">
+
+        <h1>{{article.title}}</h1>
+        <div class="row">
+            <div class="col-sm">
+                <i class="fa fa-clock-o" aria-hidden="true"></i> {{article.createDate}}
+            </div>
+            <div class="col-sm">
+                <i class="fa fa-user" aria-hidden="true"></i> {{article.nickname}}
+            </div>
+            <div class="col-sm">
+                <i class="fa fa-eye" aria-hidden="true"></i> {{article.views}}
+            </div>
+        </div>
+        <hr>
+        <div v-html="mdContent" class="mdContent"></div>
+        <p v-if="article.updateDate == null" class="text-right text-secondary small font-weight-light">发布后未修改</p>
+        <p v-if="article.updateDate != null" class="text-right text-secondary small font-weight-light">最后编辑于 {{article.updateDate}}</p>
+        <hr>
+        <div class="text-center">
+            <el-button plain circle type="primary" @click="backHistory()"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></el-button>
+            <el-button plain circle type="primary" @click="forwardToHome()"><i class="fa fa-home" aria-hidden="true"></i></el-button>
+            <el-button plain circle type="success" @click="share()"><i class="fa fa-share-alt" aria-hidden="true"></i></el-button>
+            <el-button plain circle type="warning" @click="addFavorite(this)"><i class="fa fa-star" aria-hidden="true"></i></el-button>
+            <el-button plain round type="danger" @click="like(article.id)" class="my-like"><i class="fa fa-heart" aria-hidden="true"></i> {{article.likeCount}}</el-button>
+            <el-button plain circle type="primary" @click="prev()"><i class="fa fa-arrow-left" aria-hidden="true"></i></el-button>
+            <el-button plain circle type="primary" @click="next()"><i class="fa fa-arrow-right" aria-hidden="true"></i></el-button>
+            <el-button plain circle type="info" id="backTop" @click="backTop()"><i class="fa fa-chevron-up" aria-hidden="true"></i></el-button>
+        </div>
+        <br>
+
+    </div><!--bs .container end-->
+
+</div><!--vue #app end-->
+</body>
+<script src="/js/vue/2.6.10/vue.min.js"></script>
+<script src="/js/jquery/3.4.1/jquery.min.js"></script>
+<script src="/js/bootstrap/4.1.1/bootstrap.min.js"></script>
+<script src="/js/elementui/2.12.0/elementui.index.min.js"></script>
+<script src="/js/showdown/2.0.0/showdown.min.js"></script>
+<script src="/js/showdown/2.0.0/showdown-table.min.js"></script>
+<script src="/js/my/gototop.min.js"></script>
+<script th:inline="javascript">
+    new Vue({
+        el: '#app',
+        data: {
+            article: [[${article}]],
+            mdContent: new showdown.Converter({extensions: ['table']}).makeHtml([[${article.content}]])
+        },
+        methods: {
+            backHistory() {
+                window.history.back(-1)
+            },
+            forwardToHome() {
+                window.location.href='/'
+            },
+            share() {
+                this.$message.warning('暂未实现')
+            },
+            addFavorite(obj, opts) {
+                let _t, _u;
+                if (typeof opts != 'object') {
+                    _t = document.title;
+                    _u = location.href
+                } else {
+                    _t = opts.title || document.title;
+                    _u = opts.url || location.href
+                }
+                try {
+                    window.external.addFavorite(_u, _t)
+                } catch(e) {
+                    if (window.sidebar) {
+                        obj.href = _u;
+                        obj.title = _t;
+                        obj.rel = 'sidebar'
+                    } else {
+                        this.$message.warning('抱歉，您所使用的浏览器无法完成此操作。请使用 Ctrl D 将本页加入收藏夹！')
+                    }
+                }
+            },
+            like(id) {
+                $.get('/article/like/' + id, (res) => {
+                    res.success ? this.article.likeCount ++ : this.$message.error('出错！\n\n' + res.msg)
+                });
+            },
+            prev() {},
+            next() {},
+            backTop() {
+                $("#backTop").gototop({
+                    position : 0,
+                    duration : 100,    //延时/毫秒
+                    visibleAt : 300,
+                    classname : "isvisible"
+                })
+            }
+        },
+        created: function () {
+        }
+    })
+</script>
+</html>

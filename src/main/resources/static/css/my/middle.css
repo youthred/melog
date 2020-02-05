@@ -1,0 +1,14 @@
+/*垂直居中*/
+html,
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}

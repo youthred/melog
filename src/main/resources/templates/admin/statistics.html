@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="commons/header :: header(${'Melog admin statistics'}, ${'admin/statistics'})"></head>
+<body>
+
+<div id="app">
+
+    <div class="sticky-top">
+        <span th:replace="commons/nav :: nav_admin('statistics')"></span>
+    </div><!-- nav end -->
+
+    <div class="container">
+    </div><!-- bootstrap .container end -->
+
+</div><!-- vue .app end -->
+
+</body>
+<span th:replace="commons/footer"></span>
+<script src="/js/my/admin/statistics.js"></script>
+</html>

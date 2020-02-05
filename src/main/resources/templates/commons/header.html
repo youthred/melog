@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-cn"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header (title, mycss)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${title}"></title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/bootstrap/4.1.1/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/elementui/2.12.0/elementui.index.min.css">
+
+    <link th:href="'/css/my/' + ${mycss} + '.css'" rel="stylesheet">
+</head>
+</html>

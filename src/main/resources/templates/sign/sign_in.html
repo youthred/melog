@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign in Melog</title>
+    <link rel="stylesheet" href="/css/elementui/2.12.0/elementui.index.min.css">
+    <link rel="stylesheet" href="/css/my/middle.css">
+    <style>
+        #app {
+            margin: 0 auto;
+        }
+        .my-btn-submit {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-form status-icon>
+            <el-form-item>
+                <el-input type="email" v-model="userInfo.email" name="email" placeholder="Email"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="password" v-model="userInfo.password" name="password" placeholder="Password"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="text" v-model="userInfo.verificationCode" name="verificationCode" placeholder="Verification code"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button class="my-btn-submit" type="primary" @click="submit()">Sign in</el-button>
+            </el-form-item>
+            <el-form-item>
+                <a th:href="@{/signUp}"><el-button plain class="my-btn-submit" type="primary">No account yet</el-button></a>
+            </el-form-item>
+        </el-form>
+    </div>
+</body>
+<script type="text/javascript" src="/js/vue/2.6.10/vue.min.js"></script>
+<script type="text/javascript" src="/js/elementui/2.12.0/elementui.index.min.js"></script>
+<script type="text/javascript" src="/js/axios/0.19.0/axios.min.js"></script>
+<script type="text/javascript" src="/js/qs/6.9.0/qs.min.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            userInfo: {
+                email: 'admin@add1s.net',
+                password: '123456',
+                verificationCode: '1'
+            }
+        },
+        methods: {
+            submit() {
+                if (this.userInfo.email === '' || this.userInfo.password === '' || this.userInfo.verificationCode === '') {
+                    this.$message.warning('必填项不能为空');
+                } else if (!this.$options.methods.emailCheck(this.userInfo.email)) {
+                    this.$message.warning('邮箱格式不正确');
+                } else {
+                    axios.post("/doLogin", Qs.stringify(this.userInfo)).then(res => {
+                        if (res.data.success) {
+                            window.location.href="/";
+                        } else if (!res.data.success) {
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(err => {
+                        this.$message.error(err);
+                    });
+                }
+            },
+            emailCheck: function (email) {
+                let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+                if (reg.test(email)) {
+                    return true;
+                }
+            }
+        }
+    });
+</script>
+</html>

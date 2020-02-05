@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create your own account of Melog</title>
+    <link rel="stylesheet" th:href="@{css/elementui/2.12.0/elementui.index.min.css}">
+    <link rel="stylesheet" th:href="@{css/my/middle.css}">
+    <style>
+        #app {
+            margin: 0 auto;
+        }
+        .my-btn-submit {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-form>
+            <el-form-item>
+                <el-input type="email" v-model="userInfo.email" name="email" placeholder="Email"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="text" v-model="userInfo.nickname" name="nickname" placeholder="Nickname"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="password" v-model="userInfo.password" name="password" placeholder="Password"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="password" v-model="userInfo.rePassword" name="rePassword" placeholder="Repeat Password"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-input type="text" v-model="userInfo.verificationCode" name="verificationCode" placeholder="Verification code"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button class="my-btn-submit" type="primary" @click="submit()">Create account</el-button>
+            </el-form-item>
+            <el-form-item>
+                <a th:href="@{/signIn}"><el-button plain class="my-btn-submit" type="primary">Already have one</el-button></a>
+            </el-form-item>
+        </el-form>
+    </div>
+</body>
+<script type="text/javascript" th:src="@{js/vue/2.6.10/vue.min.js}"></script>
+<script type="text/javascript" th:src="@{js/elementui/2.12.0/elementui.index.min.js}"></script>
+<script type="text/javascript" th:src="@{js/axios/0.19.0/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{js/qs/6.9.0/qs.min.js}"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            userInfo: {
+                email: '',
+                nickname: '',
+                password: '',
+                rePassword: '',
+                verificationCode: ''
+            }
+        },
+        methods: {
+            submit() {
+                if (this.userInfo.email === '' || this.userInfo.nickname === '' || this.userInfo.password === '' || this.userInfo.verificationCode === '') {
+                    this.$message.warning('必填项不能为空');
+                } else if (!this.$options.methods.emailCheck(this.userInfo.email)) {
+                    this.$message.warning('邮箱格式不正确');
+                } else if (this.userInfo.password !== this.userInfo.rePassword) {
+                    this.$message.warning('两次输入密码不一致');
+                } else {
+                    axios.post("/doRegister", Qs.stringify(this.userInfo)).then(res => {
+                        if (res.data.success) {
+                            window.location.href="/";
+                        } else if (!res.data.success) {
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(err => {
+                        this.$message.error(err);
+                    });
+                }
+            },
+            emailCheck: function (email) {
+                let reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+                if (reg.test(email)) {
+                    return true;
+                }
+            }
+        }
+    });
+</script>
+</html>

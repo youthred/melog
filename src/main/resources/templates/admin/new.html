@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="commons/header :: header(${'Melog admin new article'}, ${'admin/new'})"></head>
+<head>
+    <link rel="stylesheet" href="/highlight/styles/default.min.css">
+    <script src="/highlight/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+
+<div id="app">
+
+    <div class="sticky-top">
+        <span th:replace="commons/nav :: nav_admin('new')"></span>
+    </div><!-- nav end -->
+
+    <div class="container">
+
+        <h2>
+            <span v-if="article.id == ''">编写新文章</span>
+            <span v-if="article.id != ''">修改旧文章，ID {{article.id}}</span>
+        </h2>
+        <hr>
+
+        <form>
+            <div class="form-group">
+                <input name="title" v-model="article.title" type="text" class="form-control" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <textarea id="articleContent" name="content" v-model="article.content" class="form-control" rows="25" placeholder="Content here, markdown please"></textarea>
+            </div>
+            <div class="text-center">
+                <!--这里href="#"必须加"#"，不然点击后会刷新页面，已经编辑的内容会消失-->
+                <a v-if="article.id == ''" href="#" class="btn btn-primary" @click="save()">新增</a>
+                <a v-if="article.id != ''" href="#" class="btn btn-primary" @click="update()">修改</a>
+                <a href="#" class="btn btn-outline-success" role="button" data-toggle="modal" data-target=".md-dialog" @click="mdShow()">预览</a>
+            </div>
+        </form>
+
+        <!--MD预览模态框-->
+        <div class="modal fade md-dialog" tabindex="-1" role="dialog" aria-labelledby="mdDialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">预览</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="mdShow"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- bootstrap .container end -->
+
+</div><!-- vue .app end -->
+
+</body>
+<span th:replace="commons/footer"></span>
+<script src="/js/showdown/2.0.0/showdown.min.js"></script>
+<script src="/js/showdown/2.0.0/showdown-table.min.js"></script>
+<script th:inline="javascript">
+    new Vue({
+        el: '#app',
+        data: {
+            article: {
+                id: '',
+                title: '',
+                content: ''
+            }
+        },
+        methods: {
+            save() {
+                if (isBlank(this.article.title) || isBlank(this.article.content)) {
+                    this.$message.warning('标题或内容为空')
+                } else {
+                    $.post('/article/save', this.article, (result) => {
+                        result.success ? this.$message.success('成功') : this.$message.error('失败，因为\n\n' + result.msg)
+                    })
+                }
+            },
+            update() {
+                if (isBlank(this.article.title) || isBlank(this.article.content)) {
+                    this.$message.warning('标题或内容为空')
+                } else {
+                    $.post('/article/update', {
+                        'id': this.article.id,
+                        'title': this.article.title,
+                        'content': this.article.content
+                    }, (result) => {
+                        result.success ? this.$message.success('成功') : this.$message.error('失败，因为\n\n' + result.msg)
+                    })
+                }
+            },
+            mdShow() {
+                $('#mdShow').html(new showdown.Converter({extensions: ['table']}).makeHtml($('#articleContent').val()));
+                // 代码高亮
+                hljs.initHighlighting()
+            }
+        },
+        created: function () {
+            nickname();
+            let au = [[${articleForUpdate}]];
+            if (au != null) {
+                this.article = au;
+            }
+        }
+    });
+
+    function nickname() {
+        $.get('/nickname', function (result) {
+            $('.nickname').text(result)
+        })
+    }
+
+    function isBlank(str) {
+        if (str == null || str.trim() === '') {
+            return true;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="commons/header :: header(${'Melog'}, ${'index/index'})"></head>
+<body>
+
+<div id="app">
+
+    <div class="sticky-top">
+        <span th:replace="commons/nav :: nav_homepage('homepage')"></span>
+    </div><!-- nav end -->
+
+    <div class="container">
+
+<!--        <div class="list-group">-->
+<!--            <a v-for="article in articles.list" :href="'/article/show/' + article.id" class="list-group-item list-group-item-action flex-column align-items-start">-->
+<!--                <div class="d-flex w-100 justify-content-between">-->
+<!--                    <h5 class="mb-1">{{article.title}}</h5>-->
+<!--                    <small><i class="fa fa-clock-o" aria-hidden="true"></i> {{article.createTime}}</small>-->
+<!--                </div>-->
+<!--                <p class="mb-1 text-secondary small font-weight-light">-->
+<!--                    <i class="fa fa-user" aria-hidden="true"></i> {{article.nickname}}-->
+<!--                    <i class="fa fa-eye" aria-hidden="true"></i> {{article.views}}-->
+<!--                    <i class="fa fa-heart" aria-hidden="true"></i> {{article.likeCount}}-->
+<!--                </p>-->
+<!--            </a>-->
+<!--        </div>-->
+
+        <div class="list-group">
+            <a v-for="article in articles.list" :href="'/article/show/' + article.id" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{article.title}}</h5>
+                    <small><i class="fa fa-clock-o" aria-hidden="true"></i> {{article.createTime}}</small>
+                </div>
+                <span class="badge badge-primary badge-pill"><i class="fa fa-user" aria-hidden="true"></i> {{article.nickname}}</span>
+                <span class="badge badge-info badge-pill"><i class="fa fa-eye" aria-hidden="true"></i> {{article.views}}</span>
+                <span class="badge badge-danger badge-pill"><i class="fa fa-heart" aria-hidden="true"></i> {{article.likeCount}}</span>
+            </a>
+        </div>
+
+        <br>
+        <div class="text-center">
+            <div class="btn-group">
+                <!--prev-->
+                <button v-if="page.index == 1" type="button" class="btn btn-outline-success" disabled><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                <button v-if="page.index > 1" id="prev" type="button" class="btn btn-outline-success" @click="prev()"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+                <!--pageIndex/pages-->
+                <button type="button" class="btn btn-outline-success">{{page.index}}/{{articles.pages}}</button>
+                <!--next-->
+                <button v-if="page.index == articles.pages" type="button" class="btn btn-outline-success" disabled><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+                <button v-if="page.index < articles.pages" id="next" type="button" class="btn btn-outline-success" @click="next()"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+            </div>
+        </div>
+
+    </div><!-- bootstrap .container end -->
+
+</div><!-- vue .app end -->
+
+</body>
+<span th:replace="commons/footer"></span>
+<script src="/js/my/index/index.js"></script>
+</html>

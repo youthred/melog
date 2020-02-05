@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.add1s.mapper.ArticleMapper">
+
+    <select id="findAll" resultType="net.add1s.entity.Article">
+        SELECT a.id, a.title, a.author, a.content_path contentPath, a.create_time createTime, a.update_time updateTime, a.like_count likeCount, a.views, u.nickname FROM article a
+        LEFT JOIN sys_user u ON a.author = u.email
+    </select>
+
+    <select id="findAllByUser" resultType="net.add1s.entity.Article">
+        SELECT id, title, author, content_path contentPath, create_time createTime, update_time updateTime, like_count likeCount, views FROM article
+        WHERE author = #{email}
+    </select>
+
+    <select id="findOneById" resultType="net.add1s.entity.Article">
+        SELECT a.id, a.title, a.author, a.content_path contentPath, a.create_time createTime, a.update_time updateTime, a.like_count likeCount, a.views, u.nickname FROM article a
+        LEFT JOIN sys_user u ON a.author = u.email
+        WHERE a.id = #{id}
+    </select>
+
+    <insert id="saveOne">
+        INSERT INTO article (id, title, author, content_path, create_time, like_count, views) VALUES (#{id}, #{title}, #{author}, #{contentPath}, #{createTime}, 0, 0)
+    </insert>
+
+    <update id="updateOne">
+        UPDATE article SET
+        title = #{title},
+        update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOne">
+        DELETE FROM article WHERE id = #{id}
+    </delete>
+
+    <update id="like">
+        UPDATE article SET like_count = like_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="viewsPlus">
+        UPDATE article SET views = views + 1 WHERE id = #{id}
+    </update>
+
+</mapper>
